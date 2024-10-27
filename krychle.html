@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Krychle ABC</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            perspective: 1000px;
+            background-color: gray;
+        }
+
+        .cube {
+            position: relative;
+            width: 100px;
+            transform-style: preserve-3d;
+            transform: rotateX(-30deg) rotateY(-45deg);
+            animation: rotate 0s infinite linear;
+        }
+
+        .face {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border: 2px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Přední strana */
+        .front {
+            transform: rotateY(0deg) translateZ(50px);
+        }
+
+        /* Horní strana */
+        .top {
+            transform: rotateX(90deg) translateZ(50px);
+        }
+
+        /* Pravá strana */
+        .right {
+            transform: rotateY(90deg) translateZ(50px);
+        }
+
+        /* Písmena */
+        .front span {
+            transform: rotate(0deg);
+        }
+
+        .top span {
+            transform: rotate(-90deg);
+        }
+
+        .right span {
+            transform: rotate(0deg);
+        }
+    </style>
+</head>
+<body>
+
+<div class="krychle">
+    <div class="predni strana"><span>A</span></div>
+    <div class="horni strana"><span>B</span></div>
+    <div class="prava strana"><span>C</span></div>
+</div>
+
+</body>
+</html>

@@ -42,37 +42,104 @@
     </style>
     <script src="./jquery-2.1.4.js"></script>
     <script>
-      var probihajiciVypocet = false; //proměnná pro uložení info, jestli bylo aktuálně stisknuto nějaké tlačítko s operací...
+      var probihajiciVypocet = false; // proměnná pro uložení info, jestli bylo aktuálně stisknuto nějaké tlačítko s operací...
+      var currentExpression = ""; // Proměnná pro ukládání aktuálního výrazu
+
       function spocitat() {
-        //TODO výpočet zadaného příkladu
-        alert("tahle kalkulačka zatím umí jen zapisovat čísla...");
+        try {
+          // Parsování a výpočet výrazu
+          let tokens = currentExpression.split(" ");
+          let result = evaluateExpression(tokens);
+
+          if (result === undefined || !isFinite(result))
+            throw new Error("Math Error");
+
+          $("#cislo").val(result);
+          currentExpression = result.toString();
+          probihajiciVypocet = true; // Signalizuje dokončený výpočet
+        } catch (error) {
+          $("#cislo").val("Error");
+          currentExpression = "";
+        }
       }
+
+      function evaluateExpression(tokens) {
+        // Priorita: násobení a dělení
+        let stack = [];
+        for (let i = 0; i < tokens.length; i++) {
+          if (tokens[i] === "*" || tokens[i] === "/") {
+            let operator = tokens[i];
+            let operand1 = parseFloat(stack.pop());
+            let operand2 = parseFloat(tokens[++i]);
+            if (operator === "*") stack.push(operand1 * operand2);
+            else stack.push(operand1 / operand2);
+          } else {
+            stack.push(tokens[i]);
+          }
+        }
+
+        // Zpracování sčítání a odčítání
+        let result = parseFloat(stack[0]);
+        for (let i = 1; i < stack.length; i += 2) {
+          let operator = stack[i];
+          let operand = parseFloat(stack[i + 1]);
+          if (operator === "+") result += operand;
+          else if (operator === "-") result -= operand;
+        }
+
+        return result;
+      }
+
       $(document).ready(function () {
         var numberInput = $("#cislo");
-        //reakce na stisknutí tlačítka s číslem...
+
+        // Reakce na stisknutí tlačítka s číslem...
         $(".numberButton").click(function () {
           var aktualniCislo = $(this).text();
-          var numberInputVal = numberInput.val();
           if (probihajiciVypocet) {
-            spocitat();
-            numberInputVal = 0;
+            currentExpression = "";
+            probihajiciVypocet = false;
           }
-          if (numberInputVal == 0 && aktualniCislo > 0) {
-            numberInputVal = aktualniCislo;
-          } else if (numberInputVal > 0) {
-            numberInputVal += aktualniCislo;
-          }
-          numberInput.val(numberInputVal);
+          currentExpression += aktualniCislo;
+          numberInput.val(currentExpression);
         });
+
         $("#buttonFaktorial").click(function () {
-          //TODO spočítání faktoriálu u čísla, které je aktuálně zobrazené na displeji
+          // Výpočet faktoriálu
+          let value = parseInt(numberInput.val(), 10);
+          if (isNaN(value) || value < 0) {
+            numberInput.val("Error");
+            currentExpression = "";
+          } else {
+            let result = 1;
+            for (let i = 1; i <= value; i++) {
+              result *= i;
+            }
+            numberInput.val(result);
+            currentExpression = result.toString();
+            probihajiciVypocet = true;
+          }
         });
-        //TODO doplnění reakcí na tlačítka, která představují jednotlivé matematické operace (pozor na prioritu násobení před sčítáním!)
+
+        // Reakce na tlačítka s operacemi
+        $("#buttonPlus, #buttonMinus, #buttonKrat, #buttonDeleno").click(
+          function () {
+            let operator = $(this).text();
+            if (probihajiciVypocet) {
+              probihajiciVypocet = false;
+            }
+            currentExpression += ` ${operator} `;
+            numberInput.val(currentExpression);
+          }
+        );
+
         $("#buttonRovnase").click(function () {
           spocitat();
         });
+
         $("#buttonCe").click(function () {
           numberInput.val(0);
+          currentExpression = "";
           probihajiciVypocet = false;
         });
       });

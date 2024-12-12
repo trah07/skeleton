@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Distance Calculator</title>
+    <link rel="stylesheet" href="./bootstrap.min.css" />
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Distance to Prague University of Economics and Business</h1>
+      <p id="from">
+        From: Ke Klíčovu 191/9, 190 00 Prague 9 - Vysočany, Czechia
+      </p>
+      <p id="to">To: VŠE - Prague University of Economics and Business</p>
+      <p id="latitude">Latitude: Loading...</p>
+      <p id="longitude">Longitude: Loading...</p>
+      <p id="distance">Distance: Calculating...</p>
+    </div>
+
+    <script>
+      // Coordinates of Prague University of Economics and Business
+      const universityLat = 50.0848;
+      const universityLng = 14.4473;
+
+      // Coordinates of Ke Klíčovu 191/9, 190 00 Prague 9 - Vysočany, Czechia
+      const startLat = 50.1116;
+      const startLng = 14.5268;
+
+      // Function to calculate distance using the Haversine formula
+      function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radius of the Earth in km
+        const dLat = ((lat2 - lat1) * Math.PI) / 180;
+        const dLon = ((lon2 - lon1) * Math.PI) / 180;
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      }
+
+      $(document).ready(function () {
+        // Update latitude and longitude on the page
+        $("#latitude").text(`From Latitude: ${startLat}`);
+        $("#longitude").text(`From Longitude: ${startLng}`);
+
+        // Calculate and display the distance
+        const distance = calculateDistance(
+          startLat,
+          startLng,
+          universityLat,
+          universityLng
+        );
+        $("#distance").text(`Distance: ${distance.toFixed(2)} km`);
+      });
+    </script>
+  </body>
+</html>

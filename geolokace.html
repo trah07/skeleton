@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Geolokace</title>
+    <link rel="stylesheet" href="./bootstrap.min.css" />
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Geolokace</h1>
+      <h2>Vzdálenost od aktuální lokace až na VŠE</h2>
+      <p id="latitude">Latitude: Loading...</p>
+      <p id="longitude">Longitude: Loading...</p>
+      <h3><p id="distance">Vzdálenost: Calculating...</p></h3>
+    </div>
+
+    <script>
+      // Koordinace VŠE
+      const universityLat = 50.0848;
+      const universityLng = 14.4473;
+
+      function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = ((lat2 - lat1) * Math.PI) / 180;
+        const dLon = ((lon2 - lon1) * Math.PI) / 180;
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      }
+
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+
+            $("#latitude").text(`Latitude: ${userLat}`);
+            $("#longitude").text(`Longitude: ${userLng}`);
+
+            const distance = calculateDistance(
+              userLat,
+              userLng,
+              universityLat,
+              universityLng
+            );
+            $("#distance").text(`Distance: ${distance.toFixed(2)} km`);
+          },
+          function (error) {
+            $("#latitude").text("Error getting location");
+            $("#longitude").text("");
+            $("#distance").text("Unable to calculate distance");
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    </script>
+  </body>
+</html>
